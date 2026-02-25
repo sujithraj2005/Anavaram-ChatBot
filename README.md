@@ -1,6 +1,6 @@
 # Annavaram Temple Chatbot 🏛️
 
-An intelligent AI-powered chatbot that provides information about the Annavaram Temple using Retrieval-Augmented Generation (RAG) technology. The chatbot can answer questions about the temple by searching through a knowledge base PDF and generating contextual responses using OpenAI's language models.
+An intelligent AI-powered chatbot that provides information about the Annavaram Temple using Retrieval-Augmented Generation (RAG) technology. The chatbot can answer questions about the temple by searching through a knowledge base PDF and generating contextual responses using Groq's Llama language model.
 
 ## 🌟 Features
 
@@ -14,15 +14,15 @@ An intelligent AI-powered chatbot that provides information about the Annavaram 
 ## 🛠️ Technologies Used
 
 - **Backend**: Flask (Python)
-- **AI/ML**: LangChain, OpenAI GPT, FAISS Vector Database
+- **AI/ML**: LangChain, Groq API (Llama-3.3-70B), FAISS Vector Database
 - **Frontend**: HTML, CSS, JavaScript (jQuery), Bootstrap
 - **Document Processing**: PyPDF2
-- **Vector Embeddings**: OpenAI Embeddings
+- **Vector Embeddings**: TF-IDF (scikit-learn)
 
 ## 📋 Prerequisites
 
 - Python 3.7+
-- OpenAI API Key
+- Groq API Key (free tier available at https://console.groq.com)
 - Internet connection for API calls
 
 ## 🚀 Installation
@@ -50,27 +50,20 @@ An intelligent AI-powered chatbot that provides information about the Annavaram 
    pip install -r requirements.txt
    ```
 
-4. **Set Up OpenAI API Key**
+4. **Set Up Groq API Key**
    
-   Copy the example environment file and add your API key:
+   Create a `.env` file in the project root directory with your Groq API key:
+   ```
+   GROQ_API_KEY=your_actual_groq_api_key_here
+   ```
+   
+   You can also set it via command line:
    ```bash
    # Windows:
-   copy .env.example .env
+   set GROQ_API_KEY=your_actual_groq_api_key_here
    
    # macOS/Linux:
-   cp .env.example .env
-   ```
-   
-   Then edit the `.env` file and replace `your_openai_api_key_here` with your actual OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_actual_openai_api_key_here
-   ```
-   ```bash
-   # Windows:
-   set OPENAI_API_KEY=your_openai_api_key_here
-   
-   # macOS/Linux:
-   export OPENAI_API_KEY=your_openai_api_key_here
+   export GROQ_API_KEY=your_actual_groq_api_key_here
    ```
 
 ## 📁 Project Structure
@@ -105,7 +98,7 @@ Annavaram_ChatBot/
    - "What are the different types of darshanas available?"
    - "Tell me about the history of Annavaram Temple"
    - "What are the temple timings?"
-   - "How can I reach Annavaram Temple?"
+   - "How can I reach Annavaram Temple5"
    - "What festivals are celebrated at the temple?"
 
 ## 🔧 Configuration
@@ -125,15 +118,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-```
-
-## 🏗️ How It Works
-
-1. **Document Processing**: The PDF document is processed and split into chunks
-2. **Vector Embeddings**: Text chunks are converted to vector embeddings using OpenAI
+The application automatically loads the Groq API key from the `.env` file:
+```python
+import os
+from dotenv import load_dotenv
+ (800 characters with 200 overlap)
+2. **Vector Embeddings**: Text chunks are converted to vector embeddings using TF-IDF (300 features)
 3. **Vector Storage**: FAISS creates a searchable database of document embeddings
-4. **Query Processing**: User questions are converted to embeddings and matched with relevant chunks
-5. **Answer Generation**: OpenAI generates contextual answers based on retrieved information
+4. **Query Processing**: User questions are converted to embeddings and matched with relevant chunks (top 3)
+5. **Answer Generation**: Groq's Llama-3.3-70B model generates contextual answers based on retrieved information
 
 ## 🔍 API Endpoints
 
@@ -161,19 +154,20 @@ Replace `static/doctor.jpeg` with your preferred bot avatar image.
 
 1. **Import Errors**
    - Ensure virtual environment is activated
-   - Verify all dependencies are installed
+   - Verify all dependencies are installed: `pip install -r requirements.txt`
 
-2. **OpenAI API Key Issues**
-   - Check if API key is correctly set
-   - Verify API key has sufficient credits
-   - Ensure API key has proper permissions
+2. **GROQ_API_KEY Not Found**
+   - Verify `.env` file exists in the project root
+   - Check that `GROQ_API_KEY=your_key` is properly set
+   - Ensure the API key is valid and active
 
 3. **PDF Not Found**
    - Verify `annavaram.pdf` is in the project root
    - Check file permissions
+   - Ensure the file path is correct
 
 4. **Port Already in Use**
-   - Change port in `app.py`
+   - Change port in `app.py` (default is 8085)
    - Or kill existing processes using the port
 
 ## 📝 Development
@@ -211,13 +205,14 @@ This project is open source and available under the [MIT License](LICENSE).
 
 For issues and questions:
 - Check the troubleshooting section
-- Create an issue in the repository
-- Verify your OpenAI API setup
+- Create an isGroq API setup at https://console.groq.com
 
 ## 🙏 Acknowledgments
 
-- OpenAI for the language models
+- Groq for the fast Llama language model
 - LangChain for the RAG framework
+- FAISS for efficient vector search
+- scikit-learn for TF-IDF vectorization
 - FAISS for efficient vector search
 - Bootstrap for responsive design components
 
