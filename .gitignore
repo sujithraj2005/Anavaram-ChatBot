@@ -1,0 +1,17 @@
+# Virtual Environment
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# API keys and sensitive data
+.env
+
+# Local development settings
+.vscode/
+.idea/
+
+# OS specific files
+.DS_Store
+Thumbs.db

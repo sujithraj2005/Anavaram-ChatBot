@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annavaram Temple Chatbot</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+</head>
+
+<body>
+    <!-- Background particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="temple-icon">
+            <i class="fas fa-place-of-worship"></i>
+        </div>
+        <h1 class="main-title">Sri Satyanarayana Swamy Temple</h1>
+        <h2 class="sub-title">Annavaram</h2>
+        <p class="tagline">Your Divine Guide & Information Assistant</p>
+    </div>
+
+    <!-- Main Chat Container -->
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-sm-12">
+                <div class="chat-container">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <div class="bot-avatar">
+                            <img src="../static/Temple.jpg" alt="Temple Bot" class="avatar-img">
+                            <div class="online-status"></div>
+                        </div>
+                        <div class="bot-info">
+                            <h4 class="bot-name">Temple Guide</h4>
+                            <p class="bot-status">
+                                <i class="fas fa-circle status-dot"></i>
+                                Online & Ready to Help
+                            </p>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="action-btn" title="Temple Information">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages Area -->
+                    <div id="messageArea" class="chat-messages">
+                        <!-- Welcome Message -->
+                        <div class="message-wrapper bot-message">
+                            <div class="avatar-small">
+                                <img src="../static/Temple.jpg" alt="Bot">
+                            </div>
+                            <div class="message-content">
+                                <div class="message-bubble bot-bubble">
+                                    <p>🙏 Namaste! Welcome to Sri Satyanarayana Swamy Temple, Annavaram.</p>
+                                    <p>I'm here to help you with information about:</p>
+                                    <ul>
+                                        <li>Temple history and significance</li>
+                                        <li>Darshan timings and procedures</li>
+                                        <li>Special poojas and festivals</li>
+                                        <li>Travel and accommodation</li>
+                                    </ul>
+                                    <p>Feel free to ask me anything about our sacred temple! 🏛️</p>
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="chat-input-section">
+                        <form id="messageForm" class="message-form">
+                            <div class="input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="messageInput" 
+                                    placeholder="Ask about temple timings, darshan, history..." 
+                                    autocomplete="off"
+                                    maxlength="500"
+                                >
+                                <button type="button" class="mic-button" id="micButton" title="Click to speak">
+                                    <i class="fas fa-microphone" id="micIcon"></i>
+                                </button>
+                                <button type="submit" class="send-button">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Quick Action Buttons -->
+                        <div class="quick-actions">
+                            <button class="quick-btn" data-message="What are the temple timings?">
+                                <i class="fas fa-clock"></i> Timings
+                            </button>
+                            <button class="quick-btn" data-message="Tell me about darshan procedures">
+                                <i class="fas fa-hands-praying"></i> Darshan
+                            </button>
+                            <button class="quick-btn" data-message="What festivals are celebrated?">
+                                <i class="fas fa-calendar-alt"></i> Festivals
+                            </button>
+                            <button class="quick-btn" data-message="How to reach Annavaram?">
+                                <i class="fas fa-map-marker-alt"></i> Directions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>🕉️ May Lord Satyanarayana bless you with peace and prosperity 🕉️</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let messageCounter = 0;
+
+            // Form submission handler
+            $("#messageForm").on("submit", function (event) {
+                event.preventDefault();
+                sendMessage();
+            });
+
+            // Quick action button handlers
+            $(".quick-btn").on("click", function() {
+                const message = $(this).data("message");
+                $("#messageInput").val(message);
+                sendMessage();
+            });
+
+            // Speech Recognition Setup
+            let recognition = null;
+            let isListening = false;
+
+            // Check if browser supports speech recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                // Configure speech recognition
+                recognition.lang = 'en-US'; // You can change to 'te-IN' for Telugu
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                // Speech recognition event handlers
+                recognition.onstart = function() {
+                    isListening = true;
+                    $("#micIcon").removeClass("fa-microphone").addClass("fa-stop");
+                    $("#micButton").addClass("listening");
+                    $("#messageInput").attr("placeholder", "Listening... Speak now!");
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    $("#messageInput").val(transcript);
+                    $("#messageInput").focus();
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    let errorMessage = "Speech recognition error. ";
+                    
+                    switch(event.error) {
+                        case 'no-speech':
+                            errorMessage += "No speech detected. Please try again.";
+                            break;
+                        case 'audio-capture':
+                            errorMessage += "Microphone not found. Please check your microphone.";
+                            break;
+                        case 'not-allowed':
+                            errorMessage += "Microphone access denied. Please allow microphone access.";
+                            break;
+                        default:
+                            errorMessage += "Please try again.";
+                    }
+                    
+                    // Show error message temporarily
+                    const originalPlaceholder = $("#messageInput").attr("placeholder");
+                    $("#messageInput").attr("placeholder", errorMessage);
+                    setTimeout(() => {
+                        $("#messageInput").attr("placeholder", "Ask about temple timings, darshan, history...");
+                    }, 3000);
+                };
+
+                recognition.onend = function() {
+                    isListening = false;
+                    $("#micIcon").removeClass("fa-stop").addClass("fa-microphone");
+                    $("#micButton").removeClass("listening");
+                    $("#messageInput").attr("placeholder", "Ask about temple timings, darshan, history...");
+                };
+
+                // Microphone button click handler
+                $("#micButton").on("click", function() {
+                    if (isListening) {
+                        recognition.stop();
+                    } else {
+                        recognition.start();
+                    }
+                });
+            } else {
+                // Hide mic button if speech recognition is not supported
+                $("#micButton").hide();
+                console.warn("Speech recognition not supported in this browser");
+            }
+
+            function sendMessage() {
+                const messageText = $("#messageInput").val().trim();
+                
+                if (messageText === "") return;
+
+                const currentTime = getCurrentTime();
+                messageCounter++;
+
+                // Clear input
+                $("#messageInput").val("");
+
+                // Add user message
+                const userMessage = `
+                    <div class="message-wrapper user-message" id="msg-${messageCounter}">
+                        <div class="message-content">
+                            <div class="message-bubble user-bubble">
+                                ${messageText}
+                            </div>
+                            <div class="message-time">${currentTime}</div>
+                        </div>
+                        <div class="avatar-small">
+                            <img src="https://i.imgur.com/V4RclNb.png" alt="You">
+                        </div>
+                    </div>
+                `;
+
+                $("#messageArea").append(userMessage);
+                scrollToBottom();
+
+                // Show typing indicator
+                showTypingIndicator();
+
+                // Send AJAX request
+                $.ajax({
+                    url: "/get",
+                    type: "POST",
+                    data: { msg: messageText },
+                    success: function (response) {
+                        hideTypingIndicator();
+                        
+                        const botMessage = `
+                            <div class="message-wrapper bot-message">
+                                <div class="avatar-small">
+                                    <img src="../static/Temple.jpg" alt="Bot">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble bot-bubble">
+                                        ${response}
+                                    </div>
+                                    <div class="message-time">${currentTime}</div>
+                                </div>
+                            </div>
+                        `;
+
+                        $("#messageArea").append(botMessage);
+                        scrollToBottom();
+                    },
+                    error: function () {
+                        hideTypingIndicator();
+                        
+                        const errorMessage = `
+                            <div class="message-wrapper bot-message">
+                                <div class="avatar-small">
+                                    <img src="../static/Temple.jpg" alt="Bot">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble bot-bubble error">
+                                        I apologize, but I'm having trouble connecting right now. Please try again in a moment.
+                                    </div>
+                                    <div class="message-time">${currentTime}</div>
+                                </div>
+                            </div>
+                        `;
+
+                        $("#messageArea").append(errorMessage);
+                        scrollToBottom();
+                    }
+                });
+            }
+
+            function showTypingIndicator() {
+                const typingHtml = `
+                    <div class="message-wrapper bot-message typing-indicator" id="typing">
+                        <div class="avatar-small">
+                            <img src="../static/Temple.jpg" alt="Bot">
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble bot-bubble typing">
+                                <div class="typing-animation">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $("#messageArea").append(typingHtml);
+                scrollToBottom();
+            }
+
+            function hideTypingIndicator() {
+                $("#typing").remove();
+            }
+
+            function scrollToBottom() {
+                setTimeout(() => {
+                    $("#messageArea").animate({
+                        scrollTop: $("#messageArea")[0].scrollHeight
+                    }, 300);
+                }, 100);
+            }
+
+            function getCurrentTime() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const displayHours = hours % 12 || 12;
+                const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                return `${displayHours}:${displayMinutes} ${ampm}`;
+            }
+
+            // Auto-focus on input
+            $("#messageInput").focus();
+        });
+    </script>
+</body>
+</html>
