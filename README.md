@@ -98,7 +98,7 @@ Annavaram_ChatBot/
    - "What are the different types of darshanas available?"
    - "Tell me about the history of Annavaram Temple"
    - "What are the temple timings?"
-   - "How can I reach Annavaram Temple5"
+   - "How can I reach Annavaram Temple?"
    - "What festivals are celebrated at the temple?"
 
 ## 🔧 Configuration
@@ -111,18 +111,18 @@ if __name__ == '__main__':
 ```
 
 ### Using Environment Variables for API Key
-For better security, modify `app.py` to use environment variables:
+The application automatically loads the Groq API key from the `.env` file:
 ```python
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-The application automatically loads the Groq API key from the `.env` file:
-```python
-import os
-from dotenv import load_dotenv
- (800 characters with 200 overlap)
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+```
+
+## 🏗️ How It Works
+
+1. **Document Processing**: The PDF document is processed and split into chunks (800 characters with 200 overlap)
 2. **Vector Embeddings**: Text chunks are converted to vector embeddings using TF-IDF (300 features)
 3. **Vector Storage**: FAISS creates a searchable database of document embeddings
 4. **Query Processing**: User questions are converted to embeddings and matched with relevant chunks (top 3)
