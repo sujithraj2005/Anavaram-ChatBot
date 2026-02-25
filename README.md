@@ -190,10 +190,6 @@ python true_python_file.py
 - Consider rate limiting for production deployment
 - Implement user authentication if needed
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## 🤝 Contributing
 
 1. Fork the repository
